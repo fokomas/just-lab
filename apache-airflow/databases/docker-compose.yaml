@@ -1,0 +1,35 @@
+services:
+  origin:
+    image: mysql:9.1.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./seed/origin.sql:/docker-entrypoint-initdb.d/origin.sql:ro
+    networks:
+      - airflow_network
+
+  target:
+    image: postgres:17.2
+    restart: always
+    environment:
+      POSTGRES_DB: target_db
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./seed/target.sql:/docker-entrypoint-initdb.d/target.sql:ro
+    networks:
+      - airflow_network
+
+volumes:
+  mysql_data:
+  postgres_data:
+
+networks:
+  airflow_network:
+    external: true
